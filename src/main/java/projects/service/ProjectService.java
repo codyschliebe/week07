@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import projects.dao.ProjectDao;
 import projects.entity.Project;
+import projects.exception.DbException;
 
 @SuppressWarnings("unused")
 public class ProjectService {
@@ -27,5 +28,19 @@ public class ProjectService {
 				
 				"Project with project ID=" + projectId + " does not exist."));
 		}
+
+	public void modifyProjectDetails(Project project) {
+		if (projectDao.modifyProjectDetails(project) == false) {
+			throw new DbException("The project with ID=" + project.getProjectId() + " does not exist.");
+		}
+	
+	}
+
+	public void deleteProject(Integer projectId) {
+		if (projectDao.deleteProject(projectId) == false) {
+			throw new DbException("The project with ID=" + projectId + " does not exist.");
+		}
+			
+	}
 
 }

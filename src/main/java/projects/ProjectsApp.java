@@ -18,7 +18,9 @@ public class ProjectsApp {
 			private List<String> operations = List.of(
 					"1) Add a project",
 					"2) List projects",
-					"3) Select a project"
+					"3) Select a project",
+					"4) Update project details",
+					"5) Delete a project"
 					);
 			// @formatter:on
 
@@ -51,6 +53,14 @@ public class ProjectsApp {
 						selectProject();
 						break;
 						
+					case 4:
+						updateProjectDetails();
+						break;
+						
+					case 5:
+						deleteProject();
+						break;
+						
 					default:
 						System.out.println("\n" + selection + " is not a valid selection. Try again.");
 						break;
@@ -60,6 +70,72 @@ public class ProjectsApp {
 				System.out.println("\nError: " + e + " Try again.");
 			}
 		}
+	}
+
+	private void deleteProject() {
+		listProjects();
+		
+		Integer projectId = getIntInput("\nEnter the ID of the project to delete");
+		
+		//pass Integer to deleteProject as projectId
+		projectService.deleteProject(projectId);
+		
+		//print a message that project was deleted successfully
+		System.out.println("The project with ID=" + " " + projectId + " was deleted successfully.");
+		
+		//check if entered project id is same as projInt; if so, set to null
+		if(curProject.getProjectId() == projectId) {
+			curProject = null;
+		}
+		
+	}
+
+	private void updateProjectDetails() {
+
+		while (curProject == null) {
+			System.out.println("\nPlease select a project.");
+			return;
+		}
+		
+		// create objects for each field in curProject
+		String projectName = getStringInput(
+				"Enter the project name [" + curProject.getProjectName() + "]");
+		
+		BigDecimal estimatedHours = getDecimalInput(
+				"Enter the estimated hours [" + curProject.getEstimatedHours() + "]");
+		
+		BigDecimal actualHours = getDecimalInput(
+				"Enter the actual hours [" + curProject.getActualHours() + "]");
+		
+		Integer difficulty = getIntInput(
+				"Enter the project difficulty (1-5) [" + curProject.getDifficulty() + "]");
+		
+		String notes = getStringInput(
+				"Enter the project notes [" + curProject.getNotes() + "]");
+		
+		Project project = new Project();
+		
+		//sets project id to selected project id
+		project.setProjectId(curProject.getProjectId());
+		
+		//replaces values in fields
+		project.setProjectName(Objects.isNull(projectName) ? curProject.getProjectName() : projectName);
+		project.setEstimatedHours(Objects.isNull(estimatedHours) ? curProject.getEstimatedHours() : estimatedHours);
+		project.setActualHours(Objects.isNull(actualHours) ? curProject.getActualHours() : actualHours);
+		project.setDifficulty(Objects.isNull(difficulty) ? curProject.getDifficulty() : difficulty);
+		project.setNotes(Objects.isNull(notes) ? curProject.getNotes() : notes);
+
+		//calling modifyProjectDetails passing project as a parameter
+		projectService.modifyProjectDetails(project);
+		
+		//bring in the changes made
+		curProject = projectService.fetchProjectById(curProject.getProjectId());
+		
+		//check if entered project id is same as projInt; if so, set to null
+				//if(curProject.getProjectId() == project.getProjectId()) {
+				//	curProject = null;
+				//}
+		
 	}
 
 	private void selectProject() {
